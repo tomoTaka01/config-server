@@ -4,5 +4,16 @@ spring:
   cloud:
     config:
       server:
-        git:
-          uri: file:${HOME}/config-sample
+#       git:
+#         uri: file:${HOME}/config-sample
+        vault:
+          host: 127.0.0.1
+          port: 8200
+          scheme: http
+          backend: secret
+          defaultKey: application
+  profiles:
+    active: vault
+
+
+

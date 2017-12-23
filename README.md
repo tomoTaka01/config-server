@@ -79,3 +79,50 @@ public class ConfigServerApplication {
   * to seee the result 
   http://tomotaka.hatenablog.com/entry/2017/12/22/074740
 
+## using vault
+  * you just fix application.yml like the below
+  * The details here: http://cloud.spring.io/spring-cloud-static/spring-cloud-config/2.0.0.M5/single/spring-cloud-config.html
+
+```yml
+server:
+  port: 8888
+spring:
+  cloud:
+    config:
+      server:
+#       git:
+#         uri: file:${HOME}/config-sample
+        vault:
+          host: 127.0.0.1
+          port: 8200
+          scheme: http
+          backend: secret
+          defaultKey: application
+  profiles:
+    active: vault
+```
+
+  * And you have to start vault server before
+    * to see for local vault server http://tomotaka.hatenablog.com/entry/2017/12/23/092833
+
+```
+vault server -dev
+```
+
+  * put the properties in vault
+
+```
+vault write secret/application foo=bar baz=bam
+vault write secret/app-config foo=bar
+```
+
+  * to see the above properties
+
+```
+curl -X "GET" "http://localhost:8888/app-config/default" -H "X-Config-Token: {user token here}" 
+```
+  * you can get the result like this
+
+```
+{"name":"app-config","profiles":["default"],"label":null,"version":null,"state":null,"propertySources":[{"name":"vault:app-config","source":{"foo":"bar"}},{"name":"vault:application","source":{"baz":"bam","foo":"bar"}}]}
+```
